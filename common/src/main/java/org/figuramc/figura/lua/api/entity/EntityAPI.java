@@ -14,6 +14,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.vehicle.ContainerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LadderBlock;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -312,6 +313,23 @@ public class EntityAPI<T extends Entity> {
     public boolean isCrouching() {
         checkEntity();
         return entity.isCrouching();
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.is_moving")
+    public boolean isMoving() {
+        checkEntity();
+        return entity.getX() - entity.xOld != 0
+                || entity.getY() - entity.yOld != 0
+                || entity.getZ() - entity.zOld != 0;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.is_falling")
+    public boolean isFalling() {
+        checkEntity();
+        return !entity.onGround()
+                && entity.getY() - entity.yOld < 0;
     }
 
     @LuaWhitelist
