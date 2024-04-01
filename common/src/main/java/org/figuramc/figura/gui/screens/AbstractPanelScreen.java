@@ -230,4 +230,9 @@ public abstract class AbstractPanelScreen extends Screen {
 
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
+
+    // No blur in our screens!
+    @Override
+    protected void renderBlurredBackground(float tickDelta) {
+    }
 }

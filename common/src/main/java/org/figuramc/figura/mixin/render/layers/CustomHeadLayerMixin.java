@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.SkullBlock;
 import org.figuramc.figura.avatar.Avatar;
@@ -67,11 +69,9 @@ public abstract class CustomHeadLayerMixin<T extends LivingEntity, M extends Ent
         // pivot part
         if (itemStack.getItem() instanceof BlockItem block && block.getBlock() instanceof AbstractSkullBlock) {
             // fetch skull data
-            GameProfile gameProfile = null;
-            if (itemStack.hasTag()) {
-                CompoundTag tag = itemStack.getTag();
-                if (tag != null && tag.contains("SkullOwner", Tag.TAG_COMPOUND))
-                    gameProfile = NbtUtils.readGameProfile(itemStack.getTag().getCompound("SkullOwner"));
+            ResolvableProfile gameProfile = null;
+            if (itemStack.getComponents().has(DataComponents.PROFILE)) {
+                    gameProfile = itemStack.get(DataComponents.PROFILE);
             }
 
             SkullBlock.Type type = ((AbstractSkullBlock) ((BlockItem) itemStack.getItem()).getBlock()).getType();

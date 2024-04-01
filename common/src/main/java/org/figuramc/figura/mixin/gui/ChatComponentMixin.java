@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MessageSignature;
 import org.figuramc.figura.FiguraMod;
@@ -48,7 +49,7 @@ public class ChatComponentMixin {
         // receive event
         Avatar localPlayer = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (localPlayer != null) {
-            String json = Component.Serializer.toJson(message);
+            String json = Component.Serializer.toJson(message, RegistryAccess.EMPTY);
 
             Pair<String, Integer> event = localPlayer.chatReceivedMessageEvent(message.getString(), json);
             if (event != null) {

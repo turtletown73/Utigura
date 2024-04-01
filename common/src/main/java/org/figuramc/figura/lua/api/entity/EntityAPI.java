@@ -212,7 +212,7 @@ public class EntityAPI<T extends Entity> {
     public FiguraVec3 getBoundingBox() {
         checkEntity();
         EntityDimensions dim = entity.getDimensions(entity.getPose());
-        return FiguraVec3.of(dim.width, dim.height, dim.width);
+        return FiguraVec3.of(dim.width(), dim.height(), dim.width());
     }
 
     @LuaWhitelist
@@ -328,10 +328,12 @@ public class EntityAPI<T extends Entity> {
             return null;
 
         int i = 0;
-        for (ItemStack item : entity.getAllSlots()) {
-            if (i == index)
-                return ItemStackAPI.verify(item);
-            i++;
+        if (entity instanceof LivingEntity) {
+            for (ItemStack item : ((LivingEntity) entity).getAllSlots()) {
+                if (i == index)
+                    return ItemStackAPI.verify(item);
+                i++;
+            }
         }
 
         return null;

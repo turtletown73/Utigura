@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.figuramc.figura.avatar.Avatar;
@@ -37,7 +38,7 @@ public class ParticleAPI {
 
     private LuaParticle generate(String id, double x, double y, double z, double w, double t, double h) {
         try {
-            ParticleOptions options = ParticleArgument.readParticle(new StringReader(id), BuiltInRegistries.PARTICLE_TYPE.asLookup());
+            ParticleOptions options = ParticleArgument.readParticle(new StringReader(id), (HolderLookup.Provider) BuiltInRegistries.PARTICLE_TYPE.asLookup());
             Particle p = getParticleEngine().figura$makeParticle(options, x, y, z, w, t, h);
             if (p == null) throw new LuaError("Could not parse particle \"" + id + "\"");
             return new LuaParticle(id, p, owner);
@@ -106,7 +107,7 @@ public class ParticleAPI {
     )
     public boolean isPresent(String id) {
         try {
-            ParticleOptions options = ParticleArgument.readParticle(new StringReader(id), BuiltInRegistries.PARTICLE_TYPE.asLookup());
+            ParticleOptions options = ParticleArgument.readParticle(new StringReader(id), (HolderLookup.Provider) BuiltInRegistries.PARTICLE_TYPE.asLookup());
             return getParticleEngine().figura$makeParticle(options, 0, 0, 0, 0, 0, 0) != null;
         } catch (Exception ignored) {
             return false;

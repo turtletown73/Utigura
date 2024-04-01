@@ -1,6 +1,8 @@
 package org.figuramc.figura.lua.api.world;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -51,7 +53,7 @@ public class ItemStackAPI {
     public ItemStackAPI(ItemStack itemStack) {
         this.itemStack = itemStack;
         this.id = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
-        this.tag = new ReadOnlyLuaTable(itemStack.getTag() != null ? NbtToLua.convert(itemStack.getTag()) : new LuaTable());
+        this.tag = new ReadOnlyLuaTable(itemStack.getComponents() != null ? NbtToLua.convert(NbtToLua.convertToNbt(itemStack.getComponents())) : new LuaTable());
     }
 
     @LuaWhitelist
@@ -116,7 +118,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.is_food")
     public boolean isFood() {
-        return itemStack.isEdible();
+        return itemStack.getComponents().has(DataComponents.FOOD);
     }
 
     @LuaWhitelist
@@ -170,7 +172,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.get_repair_cost")
     public int getRepairCost() {
-        return itemStack.getBaseRepairCost();
+        return itemStack.get(DataComponents.REPAIR_COST);
     }
 
     @LuaWhitelist
@@ -185,7 +187,7 @@ public class ItemStackAPI {
         ItemStack stack = itemStack;
         String ret = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
 
-        CompoundTag nbt = stack.getTag();
+        CompoundTag nbt = NbtToLua.convertToNbt(stack.getComponents());
         if (nbt != null)
             ret += nbt.toString();
 
@@ -234,8 +236,8 @@ public class ItemStackAPI {
         if (!t.is(o.getItem()))
             return false;
 
-        CompoundTag tag1 = t.getTag();
-        CompoundTag tag2 = o.getTag();
+        DataComponentMap tag1 = t.getComponents();
+        DataComponentMap tag2 = o.getComponents();
         if (tag1 == null && tag2 != null)
             return false;
 

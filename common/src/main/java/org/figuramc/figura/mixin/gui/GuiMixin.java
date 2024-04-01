@@ -36,7 +36,7 @@ public class GuiMixin {
     }
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
-    private void renderCrosshair(GuiGraphics guiGraphics, CallbackInfo ci) {
+    private void renderCrosshair(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
         crosshairOffset = null;
 
         if (ActionWheel.isEnabled()) {
@@ -59,7 +59,7 @@ public class GuiMixin {
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderCrosshair")
-    private void blitRenderCrosshair(GuiGraphics guiGraphics, CallbackInfo ci) {
+    private void blitRenderCrosshair(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
         if (crosshairOffset != null) {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(crosshairOffset.x, crosshairOffset.y, 0d);
@@ -67,13 +67,13 @@ public class GuiMixin {
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", shift = At.Shift.AFTER), method = "renderCrosshair")
-    private void afterBlitRenderCrosshair(GuiGraphics guiGraphics, CallbackInfo ci) {
+    private void afterBlitRenderCrosshair(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
         if (crosshairOffset != null)
             guiGraphics.pose().popPose();
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V"), method = "renderCrosshair")
-    private void blitRenderCrosshairSliced(GuiGraphics guiGraphics, CallbackInfo ci) {
+    private void blitRenderCrosshairSliced(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
         if (crosshairOffset != null) {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(crosshairOffset.x, crosshairOffset.y, 0d);
@@ -81,7 +81,7 @@ public class GuiMixin {
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V", shift = At.Shift.AFTER), method = "renderCrosshair")
-    private void afterBlitRenderCrosshairSliced(GuiGraphics guiGraphics, CallbackInfo ci) {
+    private void afterBlitRenderCrosshairSliced(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
         if (crosshairOffset != null)
             guiGraphics.pose().popPose();
     }

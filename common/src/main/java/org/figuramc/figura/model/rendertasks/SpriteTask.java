@@ -70,7 +70,7 @@ public class SpriteTask extends RenderTask {
                     .uv(v.u, v.v)
                     .overlayCoords(newOverlay)
                     .uv2(newLight)
-                    .normal(normal, v.nx, v.ny, v.nz)
+                    .normal(poseStack.last(), v.nx, v.ny, v.nz)
                     .endVertex();
         }
     }

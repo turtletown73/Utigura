@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import org.figuramc.figura.FiguraMod;
@@ -94,7 +95,7 @@ public abstract class SkullBlockRendererMixin implements BlockEntityRenderer<Sku
     }
 
     @Inject(at = @At("HEAD"), method = "getRenderType")
-    private static void getRenderType(SkullBlock.Type type, GameProfile profile, CallbackInfoReturnable<RenderType> cir) {
-        avatar = (profile != null && profile.getId() != null) ? AvatarManager.getAvatarForPlayer(profile.getId()) : null;
+    private static void getRenderType(SkullBlock.Type type, ResolvableProfile profile, CallbackInfoReturnable<RenderType> cir) {
+        avatar = (profile != null && profile != null && profile.gameProfile() != null) ? AvatarManager.getAvatarForPlayer(profile.gameProfile().getId()) : null;
     }
 }

@@ -3,6 +3,7 @@ package org.figuramc.figura.utils;
 import com.google.gson.JsonParser;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.*;
 import net.minecraft.util.FormattedCharSequence;
@@ -80,7 +81,7 @@ public class TextUtils {
             JsonParser.parseString(text);
 
             // attempt to parse json
-            finalText = Component.Serializer.fromJsonLenient(text);
+            finalText = Component.Serializer.fromJsonLenient(text, RegistryAccess.EMPTY);
 
             // if failed, throw a dummy exception
             if (finalText == null)

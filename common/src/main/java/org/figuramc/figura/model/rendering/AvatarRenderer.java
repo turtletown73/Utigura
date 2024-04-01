@@ -22,6 +22,7 @@ import org.figuramc.figura.model.rendering.texture.FiguraTexture;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
 import org.joml.Matrix3f;
 import org.joml.Matrix4d;
+import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -193,14 +194,30 @@ public abstract class AvatarRenderer {
     public static FiguraMat4 worldToViewMatrix() {
         Minecraft client = Minecraft.getInstance();
         Camera camera = client.gameRenderer.getMainCamera();
-        Matrix3f cameraMat3f = new Matrix3f().rotation(camera.rotation());
-        cameraMat3f.invert();
+        Quaternionf rot = new Quaternionf(camera.rotation());
+        rot.x *= -1;
+        rot.z *= -1;
+        Matrix3f cameraMat3f = new Matrix3f().rotate(rot);
         FiguraMat4 result = FiguraMat4.of();
         Vec3 cameraPos = camera.getPosition().scale(-1);
         result.translate(cameraPos.x, cameraPos.y, cameraPos.z);
         FiguraMat3 cameraMat = FiguraMat3.of().set(cameraMat3f);
         result.multiply(cameraMat.augmented());
         result.scale(-1, 1, -1);
+        return result;
+    }
+
+    /**
+     * Gets a matrix to transform from world space to camera space, based on the
+     * player's camera position
+     * @return That matrix.
+     */
+    public static FiguraMat4 worldToCameraPosMatrix() {
+        Minecraft client = Minecraft.getInstance();
+        Camera camera = client.gameRenderer.getMainCamera();
+        FiguraMat4 result = FiguraMat4.of();
+        Vec3 cameraPos = camera.getPosition().scale(-1);
+        result.translate(cameraPos.x, cameraPos.y, cameraPos.z);
         return result;
     }
 

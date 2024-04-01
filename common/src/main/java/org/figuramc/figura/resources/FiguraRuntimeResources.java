@@ -3,7 +3,10 @@ package org.figuramc.figura.resources;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.repository.PackSource;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.backend2.NetworkStuff;
 import org.figuramc.figura.config.Configs;
@@ -16,12 +19,13 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class FiguraRuntimeResources {
 
     private static String ASSETS_VERSION;
-    public static final PathPackResources PACK = new PathPackResources(FiguraMod.MOD_NAME + " runtime resource pack", getRootDirectory(), true);
+    public static final PathPackResources PACK = new PathPackResources(new PackLocationInfo(FiguraMod.MOD_NAME + " runtime resource pack", Component.literal("Figura Runtime Resources"), PackSource.BUILT_IN, Optional.empty()), getRootDirectory());
 
     public static Path getRootDirectory() {
         return IOUtils.getOrCreateDir(FiguraMod.getCacheDirectory(), "resources");

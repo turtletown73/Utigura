@@ -170,7 +170,8 @@ public final class UIHelper {
 
                 // set up lighting
                 Lighting.setupForFlatItems();
-                RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, -1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, -0.3f), Vector3f::normalize));
+                RenderSystem.setShaderLights(Util.make(new Vector3f(-0.2f, -1f, 1f), Vector3f::normalize), Util.make(new Vector3f(-0.2f, 0.4f, 0.3f), Vector3f::normalize));
+                // 1.20.5 invered the z for lights
 
                 // invisibility
                 entity.setInvisible(false);
@@ -192,8 +193,7 @@ public final class UIHelper {
         PoseStack pose = gui.pose();
         pose.pushPose();
         pose.translate(x, y, 250d);
-        pose.scale(scale, scale, scale);
-        pose.last().pose().scale(1f, 1f, -1f); // Scale ONLY THE POSITIONS! Inverted normals don't work for whatever reason
+        pose.scale(scale, scale, -scale); // Scale positions and normals, necessary as of 1.20.5
 
         Avatar avatar = AvatarManager.getAvatar(entity);
         if (RenderUtils.vanillaModelAndScript(avatar) && !avatar.luaRuntime.renderer.getRootRotationAllowed()) {

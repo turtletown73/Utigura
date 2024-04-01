@@ -14,13 +14,16 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.DyeableArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.armortrim.ArmorTrim;
+import net.minecraft.world.item.component.DyedItemColor;
 import org.figuramc.figura.avatar.Avatar;
 import org.figuramc.figura.avatar.AvatarManager;
 import org.figuramc.figura.compat.GeckoLibCompat;
@@ -261,30 +264,32 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         float tintR = 1;
         float tintG = 1;
         float tintB = 1;
+        int i = itemStack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(itemStack, -6265536) : -1;
+        hasOverlay = itemStack.is(ItemTags.DYEABLE);
 
-        if (armorItem instanceof DyeableArmorItem dyeableArmorItem) {
-            int i = dyeableArmorItem.getColor(itemStack);
-            tintR = (float) (i >> 16 & 255) / 255.0F;
-            tintG = (float) (i >> 8 & 255) / 255.0F;
-            tintB = (float) (i & 255) / 255.0F;
-            hasOverlay = true;
+        ArmorMaterial material = armorItem.getMaterial().value();
+        for(ArmorMaterial.Layer layer : material.layers()) {
+            if (layer.dyeable() && i != -1) {
+                tintR = (float) (i >> 16 & 255) / 255.0F;
+                tintG = (float) (i >> 8 & 255) / 255.0F;
+                tintB = (float) (i & 255) / 255.0F;
+            } else {
+                tintR = 1.0F;
+                tintG = 1.0F;
+                tintB = 1.0F;
+            }
+            ResourceLocation normalArmorResource = layer.texture(bl);
+            VertexConsumer regularArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(normalArmorResource));
+            modelPart.render(poseStack, regularArmorConsumer, light, OverlayTexture.NO_OVERLAY, tintR, tintG, tintB, 1f);
         }
 
-        ResourceLocation normalArmorResource = RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>)(Object)this, entity, itemStack, armorItem, armorSlot, bl, null);
-        VertexConsumer regularArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(normalArmorResource));
-        modelPart.render(poseStack, regularArmorConsumer, light, OverlayTexture.NO_OVERLAY, tintR, tintG, tintB, 1f);
-
-        if (hasOverlay) {
-            VertexConsumer overlaidArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(RenderUtils.getArmorResource((HumanoidArmorLayer<T, M, A>)(Object)this, entity, itemStack, armorItem, armorSlot, bl, "overlay")));
-            modelPart.render(poseStack, overlaidArmorConsumer, light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
-        }
-
-        ArmorTrim.getTrim(entity.level().registryAccess(), itemStack, true).ifPresent((permutation) -> {
+        ArmorTrim trim = itemStack.get(DataComponents.TRIM);
+        if (trim != null) {
             var armorMaterial = armorItem.getMaterial();
-            TextureAtlasSprite trimAtlas = this.armorTrimAtlas.getSprite(bl ? permutation.innerTexture(armorMaterial) : permutation.outerTexture(armorMaterial));
+            TextureAtlasSprite trimAtlas = this.armorTrimAtlas.getSprite(bl ? trim.innerTexture(armorMaterial) : trim.outerTexture(armorMaterial));
             VertexConsumer trimConsumer = trimAtlas.wrap(vertexConsumers.getBuffer(Sheets.armorTrimsSheet(false)));
             modelPart.render(poseStack, trimConsumer, light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
-        });
+        }
 
         if (hasGlint) {
             modelPart.render(poseStack, vertexConsumers.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);

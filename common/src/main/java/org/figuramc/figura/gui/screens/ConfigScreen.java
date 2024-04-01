@@ -88,8 +88,8 @@ public class ConfigScreen extends AbstractPanelScreen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics gui, float delta) {
-        super.renderBackground(gui, delta);
+    public void renderOverlays(GuiGraphics gui, int mouseX, int mouseY, float delta) {
+        super.renderOverlays(gui, mouseX, mouseY, delta);
         if (renderPaperdoll)
             UIHelper.renderWithoutScissors(gui, g -> PaperDoll.render(g, true));
     }

@@ -35,7 +35,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     protected final PartCustomization.PartCustomizationStack customizationStack = new PartCustomization.PartCustomizationStack();
 
-    public static final FiguraMat4 VIEW_TO_WORLD_MATRIX = FiguraMat4.of();
+    public static final FiguraMat4 CAMERA_POS_TO_WORLD_MATRIX = FiguraMat4.of();
+
     private static final PartCustomization pivotOffsetter = new PartCustomization();
     protected static final VertexBuffer VERTEX_BUFFER = new VertexBuffer();
 
@@ -75,7 +76,7 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
         customizationStack.push(customization);
 
         // world matrices
-        VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
+        CAMERA_POS_TO_WORLD_MATRIX.set(AvatarRenderer.worldToCameraPosMatrix().invert());
 
         // calculate each part matrices
         calculatePartMatrices(root);
@@ -110,8 +111,9 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
             shouldRenderPivots = config;
 
         // world matrices
-        if (allowMatrixUpdate)
-            VIEW_TO_WORLD_MATRIX.set(AvatarRenderer.worldToViewMatrix().invert());
+        if (allowMatrixUpdate) {
+            CAMERA_POS_TO_WORLD_MATRIX.set(AvatarRenderer.worldToCameraPosMatrix().invert());
+        }
 
         // complexity
         int prev = avatar.complexity.remaining;
@@ -400,7 +402,8 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
 
     protected FiguraMat4 partToWorldMatrices(PartCustomization cust) {
         FiguraMat4 customizePeek = customizationStack.peek().positionMatrix.copy();
-        customizePeek.multiply(VIEW_TO_WORLD_MATRIX);
+        // Translate by the inverse matrix of the camera position, as of 1.20.5 it is no longer dependent on camera rot.
+        customizePeek.multiply(CAMERA_POS_TO_WORLD_MATRIX);
         FiguraVec3 piv = cust.getPivot();
 
         FiguraMat4 translation = FiguraMat4.of();

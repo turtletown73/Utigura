@@ -1,9 +1,10 @@
 package org.figuramc.figura.lua.api.entity;
 
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
@@ -186,14 +187,14 @@ public class LivingEntityAPI<T extends LivingEntity> extends EntityAPI<T> {
     public String getEntityCategory() {
         checkEntity();
 
-        MobType mobType = entity.getMobType(); // why it is not an enum
-        if (mobType == MobType.ARTHROPOD)
+        EntityType<?> mobType = entity.getType(); // why it is not an enum
+        if (mobType.is(EntityTypeTags.ARTHROPOD))
             return "ARTHROPOD";
-        if (mobType == MobType.UNDEAD)
+        if (mobType.is(EntityTypeTags.UNDEAD))
             return "UNDEAD";
-        if (mobType == MobType.WATER)
+        if (mobType.is(EntityTypeTags.AQUATIC))
             return "WATER";
-        if (mobType == MobType.ILLAGER)
+        if (mobType.is(EntityTypeTags.ILLAGER))
             return "ILLAGER";
 
         return "UNDEFINED";

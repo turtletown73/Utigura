@@ -522,7 +522,7 @@ public class HostAPI {
 
         for (MobEffectInstance effect : player.getActiveEffects()) {
             Map<String, Object> map = new HashMap<>();
-            map.put("name", effect.getEffect().getDescriptionId());
+            map.put("name", effect.getEffect().getRegisteredName());
             map.put("amplifier", effect.getAmplifier());
             map.put("duration", effect.getDuration());
             map.put("visible", effect.isVisible());
@@ -587,7 +587,7 @@ public class HostAPI {
     @LuaWhitelist
     @LuaMethodDoc("host.get_reach_distance")
     public double getReachDistance() {
-        return this.minecraft.gameMode == null ? 0 : this.minecraft.gameMode.getPickRange();
+        return this.minecraft.gameMode == null ? 0 : this.minecraft.player.blockInteractionRange();
     }
 
     @LuaWhitelist

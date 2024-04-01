@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import org.figuramc.figura.lua.docs.FiguraDocsManager;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
@@ -331,7 +332,7 @@ public class LuaTypeManager {
         else if (val.getClass().isArray())
             return wrapArray(val);
         else if (val instanceof Component c)
-            return LuaValue.valueOf(Component.Serializer.toJson(c));
+            return LuaValue.valueOf(Component.Serializer.toJson(c, RegistryAccess.EMPTY));
         else
             return wrap(val);
     }

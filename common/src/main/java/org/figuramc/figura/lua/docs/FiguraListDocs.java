@@ -20,7 +20,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.animation.Animation;
 import org.figuramc.figura.mixin.input.KeyMappingAccessor;
-import org.figuramc.figura.mixin.render.GameRendererAccessor;
+import org.figuramc.figura.ducks.GameEffects;
 import org.figuramc.figura.model.ParentType;
 import org.figuramc.figura.model.rendering.EntityRenderMode;
 import org.figuramc.figura.model.rendering.texture.FiguraTextureSet;
@@ -29,7 +29,6 @@ import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 import org.figuramc.figura.utils.FiguraText;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -70,7 +69,7 @@ public class FiguraListDocs {
             add(value.name());
     }};
     private static final LinkedHashSet<String> POST_EFFECTS = new LinkedHashSet<>() {{
-        for (ResourceLocation effect : GameRendererAccessor.getEffects()) {
+        for (ResourceLocation effect : GameEffects.getEffects()) {
             String[] split = effect.getPath().split("/");
             String name = split[split.length - 1];
             add(name.split("\\.")[0]);

@@ -60,7 +60,6 @@
     "particle.SingleQuadParticleMixin",
     "render.CameraMixin",
     "render.EntityRenderDispatcherMixin",
-    "render.GameRendererAccessor",
     "render.GameRendererMixin",
     "render.LevelRendererMixin",
     "render.MissingTextureAtlasSpriteAccessor",

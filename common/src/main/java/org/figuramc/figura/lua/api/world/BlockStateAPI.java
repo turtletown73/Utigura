@@ -289,14 +289,14 @@ public class BlockStateAPI {
     @LuaMethodDoc("blockstate.get_entity_data")
     public LuaTable getEntityData() {
         BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getBlockPos());
-        return (LuaTable) NbtToLua.convert(entity != null ? entity.saveWithoutMetadata() : null);
+        return (LuaTable) NbtToLua.convert(entity != null ? entity.saveWithoutMetadata(WorldAPI.getCurrentWorld().registryAccess()) : null);
     }
 
     @LuaWhitelist
     @LuaMethodDoc("blockstate.to_state_string")
     public String toStateString() {
         BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getBlockPos());
-        CompoundTag tag = entity != null ? entity.saveWithoutMetadata() : new CompoundTag();
+        CompoundTag tag = entity != null ? entity.saveWithoutMetadata(WorldAPI.getCurrentWorld().registryAccess()) : new CompoundTag();
 
         return BlockStateParser.serialize(blockState) + tag;
     }
