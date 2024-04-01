@@ -15,7 +15,10 @@ import org.figuramc.figura.utils.FiguraResourceListener;
 import org.figuramc.figura.utils.FiguraText;
 import org.figuramc.figura.utils.IOUtils;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -310,7 +313,7 @@ public class LocalAvatarLoader {
                 Path path = entry.getKey().resolve((Path) event.context());
                 String name = IOUtils.getFileNameOrEmpty(path);
 
-                if (IOUtils.isHidden(path) || !(Files.isDirectory(path) || name.matches("(.*(\\.lua|\\.bbmodel|\\.ogg|\\.png)$|avatar\\.json)")))
+                if (IOUtils.isHiddenAvatarResource(path) || !(Files.isDirectory(path) || name.matches("(.*(\\.lua|\\.bbmodel|\\.ogg|\\.png)$|avatar\\.json)")))
                     continue;
 
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE && !IS_WINDOWS)
