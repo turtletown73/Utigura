@@ -509,7 +509,7 @@ public class WorldAPI {
     public static ItemStackAPI newItem(@LuaNotNil String string, Integer count, Integer damage) {
         try {
             Level level = getCurrentWorld();
-            ItemStack item = ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false);
+            ItemStack item = LuaUtils.parseItemStack("newItem", string);
             if (count != null)
                 item.setCount(count);
             if (damage != null)

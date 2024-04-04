@@ -172,7 +172,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.get_repair_cost")
     public int getRepairCost() {
-        return itemStack.get(DataComponents.REPAIR_COST);
+        return itemStack != null && itemStack != ItemStack.EMPTY && itemStack.getComponents().has(DataComponents.REPAIR_COST) ? itemStack.get(DataComponents.REPAIR_COST).intValue() : 0;
     }
 
     @LuaWhitelist

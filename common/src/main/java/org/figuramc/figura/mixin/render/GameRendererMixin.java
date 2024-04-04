@@ -7,6 +7,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.figuramc.figura.FiguraMod;
@@ -16,6 +17,7 @@ import org.figuramc.figura.ducks.GameRendererAccessor;
 import org.figuramc.figura.lua.api.ClientAPI;
 import org.figuramc.figura.math.matrix.FiguraMat4;
 import org.figuramc.figura.math.vector.FiguraVec3;
+import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.RenderUtils;
 import org.joml.Matrix4f;
@@ -44,6 +46,8 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @Shadow protected abstract void bobHurt(PoseStack poseStack, float f);
 
     @Shadow protected abstract void bobView(PoseStack poseStack, float f);
+
+    @Shadow public abstract Minecraft getMinecraft();
 
     @Unique
     private boolean avatarPostShader = false;
@@ -123,7 +127,11 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             avatarPostShader = true;
             this.effectActive = true;
             if (this.postEffect == null || !this.postEffect.getName().equals(resource.toString()))
-                this.loadEffect(resource);
+                if (this.getMinecraft().getResourceManager().getResource(resource).isPresent()) {
+                    this.loadEffect(resource);
+                } else {
+                    FiguraMod.sendChatMessage(Component.literal("Could not load %s as it was not a valid or present post effect.".formatted(resource.toString())).setStyle(ColorUtils.Colors.RED.style));
+                }
         } catch (Exception ignored) {
             this.effectActive = false;
             avatar.luaRuntime.renderer.postShader = null;

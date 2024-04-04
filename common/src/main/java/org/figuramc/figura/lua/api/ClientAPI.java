@@ -15,6 +15,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.phys.Vec3;
@@ -24,6 +25,7 @@ import org.figuramc.figura.lua.LuaNotNil;
 import org.figuramc.figura.lua.LuaWhitelist;
 import org.figuramc.figura.lua.api.entity.EntityAPI;
 import org.figuramc.figura.lua.api.entity.ViewerAPI;
+import org.figuramc.figura.lua.api.world.WorldAPI;
 import org.figuramc.figura.lua.docs.FiguraListDocs;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaMethodOverload;
@@ -709,7 +711,7 @@ public class ClientAPI {
         Registry<?> registry = BuiltInRegistries.REGISTRY.get(new ResourceLocation(registryName));
 
         if (registry != null) {
-            return registry.keySet().stream()
+            return registry.asLookup().filterFeatures(WorldAPI.getCurrentWorld().enabledFeatures()).listElementIds().map(ResourceKey::location)
                     .map(ResourceLocation::toString)
                     .collect(Collectors.toList());
         } else {

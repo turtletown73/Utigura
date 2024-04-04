@@ -199,8 +199,6 @@ public abstract class AvatarRenderer {
         rot.z *= -1;
         Matrix3f cameraMat3f = new Matrix3f().rotate(rot);
         FiguraMat4 result = FiguraMat4.of();
-        Vec3 cameraPos = camera.getPosition().scale(-1);
-        result.translate(cameraPos.x, cameraPos.y, cameraPos.z);
         FiguraMat3 cameraMat = FiguraMat3.of().set(cameraMat3f);
         result.multiply(cameraMat.augmented());
         result.scale(-1, 1, -1);

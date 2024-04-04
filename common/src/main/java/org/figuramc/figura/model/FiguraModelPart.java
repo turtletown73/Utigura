@@ -175,10 +175,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         if (parentType != ParentType.Camera)
             return;
 
-        FiguraMat4 prevPartToView = currentTransforms.positionMatrix.inverted();
-
         // Because view/rot isn't implicitly in the matrix anymore we have to multiply by it
-        prevPartToView.multiply(AvatarRenderer.worldToViewMatrix());
+        FiguraMat4 prevPartToView = AvatarRenderer.worldToViewMatrix().multiply(currentTransforms.positionMatrix.inverted());
 
         double s = 1 / 16d;
         if (UIHelper.paperdoll) {
