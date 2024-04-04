@@ -3,12 +3,18 @@ package org.figuramc.figura.utils;
 import com.google.gson.*;
 import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.datafix.fixes.ItemStackComponentizationFix;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -19,6 +25,7 @@ import net.minecraft.world.phys.HitResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.figuramc.figura.lua.api.json.FiguraJsonSerializer;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
@@ -222,6 +229,22 @@ public class LuaUtils {
         else if (item instanceof String string) {
             try {
                 Level level = WorldAPI.getCurrentWorld();
+                // Use the DFU only if necessary to convert item nbt -> components
+                if (string.contains("{")) {
+                    String tagStr = string.substring(string.indexOf("{"));
+                    CompoundTag nbtItem = new TagParser(new StringReader(tagStr)).readStruct();
+                    CompoundTag tag = new CompoundTag();
+                    tag.putString("id", ResourceLocation.read(new StringReader(string)).toString());
+                    tag.putInt("Count", 1);
+                    tag.put("tag", nbtItem);
+                    Dynamic<Tag> ops = new Dynamic<>(NbtOps.INSTANCE, tag);
+                    Optional<ItemStackComponentizationFix.ItemStackData> optionalItemStackData = ItemStackComponentizationFix.ItemStackData.read(ops);
+                    if (optionalItemStackData.isPresent()) {
+                        ItemStackComponentizationFix.ItemStackData data = optionalItemStackData.get();
+                        ItemStackComponentizationFix.fixItemStack(data, data.tag);
+                        return ItemStack.parse(level.registryAccess(), data.write().cast(NbtOps.INSTANCE)).orElse(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false));
+                    }
+                }
                 return ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false);
             } catch (Exception e) {
                 throw new LuaError("Could not parse item stack from string: " + string);
