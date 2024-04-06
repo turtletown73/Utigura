@@ -23,10 +23,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
 
+import org.figuramc.figura.lua.NbtToLua;
 import org.figuramc.figura.lua.api.json.FiguraJsonSerializer;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
@@ -221,15 +220,16 @@ public class LuaUtils {
         throw new LuaError("Illegal argument to " + methodName + "(): " + x.getClass().getSimpleName());
     }
 
-    public static ItemStack parseItemStack(String methodName, Object item) {
+    public static ItemStackAPI parseItemStackMap(String methodName, Object item) {
         if (item == null)
-            return ItemStack.EMPTY;
+            return new ItemStackAPI(ItemStack.EMPTY);
         else if (item instanceof ItemStackAPI wrapper)
-            return wrapper.itemStack;
+            return wrapper.copy();
         else if (item instanceof String string) {
             try {
                 Level level = WorldAPI.getCurrentWorld();
                 // Use the DFU only if necessary to convert item nbt -> components
+
                 if (string.contains("{")) {
                     String tagStr = string.substring(string.indexOf("{"));
                     CompoundTag nbtItem = new TagParser(new StringReader(tagStr)).readStruct();
@@ -242,16 +242,29 @@ public class LuaUtils {
                     if (optionalItemStackData.isPresent()) {
                         ItemStackComponentizationFix.ItemStackData data = optionalItemStackData.get();
                         ItemStackComponentizationFix.fixItemStack(data, data.tag);
-                        return ItemStack.parse(level.registryAccess(), data.write().cast(NbtOps.INSTANCE)).orElse(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false));
+
+                        ItemStack stack = ItemStack.parse(level.registryAccess(), data.write().cast(NbtOps.INSTANCE)).orElse(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false));
+                        LuaTable table = new LuaTable();
+                        for (String key : nbtItem.getAllKeys())
+                            table.set(key, NbtToLua.convert(nbtItem.get(key)));
+                        CompoundTag itemTag = NbtToLua.convertToNbt(stack.getComponents());
+                        for (String key : itemTag.getAllKeys())
+                            table.set(key, NbtToLua.convert(itemTag.get(key)));
+
+                        return new ItemStackAPI(stack, table);
                     }
                 }
-                return ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false);
+                return new ItemStackAPI(ItemArgument.item(CommandBuildContext.simple(level.registryAccess(), level.enabledFeatures())).parse(new StringReader(string)).createItemStack(1, false));
             } catch (Exception e) {
                 throw new LuaError("Could not parse item stack from string: " + string);
             }
         }
 
         throw new LuaError("Illegal argument to " + methodName + "(): " + item);
+    }
+
+    public static ItemStack parseItemStack(String methodName, Object item) {
+        return parseItemStackMap(methodName, item).itemStack;
     }
 
     public static BlockState parseBlockState(String methodName, Object block) {

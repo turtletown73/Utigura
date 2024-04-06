@@ -1,12 +1,16 @@
 package org.figuramc.figura.lua.api.world;
 
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
@@ -16,11 +20,11 @@ import org.figuramc.figura.lua.ReadOnlyLuaTable;
 import org.figuramc.figura.lua.docs.LuaFieldDoc;
 import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
+import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @LuaWhitelist
 @LuaTypeDoc(
@@ -49,6 +53,12 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaFieldDoc("itemstack.tag")
     public final LuaTable tag;
+
+    public ItemStackAPI(ItemStack itemStack, LuaTable tag) {
+        this.itemStack = itemStack;
+        this.id = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
+        this.tag = tag;
+    }
 
     public ItemStackAPI(ItemStack itemStack) {
         this.itemStack = itemStack;
@@ -215,7 +225,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.copy")
     public ItemStackAPI copy() {
-        return new ItemStackAPI(itemStack.copy());
+        return new ItemStackAPI(itemStack.copy(), this.tag);
     }
 
     @LuaWhitelist

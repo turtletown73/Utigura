@@ -509,12 +509,12 @@ public class WorldAPI {
     public static ItemStackAPI newItem(@LuaNotNil String string, Integer count, Integer damage) {
         try {
             Level level = getCurrentWorld();
-            ItemStack item = LuaUtils.parseItemStack("newItem", string);
+            ItemStackAPI item = LuaUtils.parseItemStackMap("newItem", string);
             if (count != null)
-                item.setCount(count);
+                item.itemStack.setCount(count);
             if (damage != null)
-                item.setDamageValue(damage);
-            return new ItemStackAPI(item);
+                item.itemStack.setDamageValue(damage);
+            return item;
         } catch (Exception e) {
             throw new LuaError("Could not parse item stack from string: " + string);
         }
