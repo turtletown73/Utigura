@@ -627,7 +627,8 @@ public class HostAPI {
             },
             value = "host.write_to_log"
     )
-    public static void writeToLog(@LuaNotNil String string) {
+    public void writeToLog(@LuaNotNil String string) {
+        if (!isHost()) return;
         FiguraMod.LOGGER.info("[FIGURA/LUA] -- " + string);
     }
 
@@ -638,7 +639,8 @@ public class HostAPI {
             },
             value = "host.warn_to_log"
     )
-    public static void warnToLog(@LuaNotNil String string) {
+    public void warnToLog(@LuaNotNil String string) {
+        if (!isHost()) return;
         FiguraMod.LOGGER.warn("[FIGURA/LUA] -- " + string);
     }
 
