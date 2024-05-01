@@ -735,6 +735,28 @@ public class ClientAPI {
         }
     }
 
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "string"),
+            },
+            value = "client.write_to_log"
+    )
+    public static void writeToLog(@LuaNotNil String string) {
+        FiguraMod.LOGGER.info("[FIGURA] -- " + string);
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = {
+                    @LuaMethodOverload(argumentTypes = String.class, argumentNames = "string"),
+            },
+            value = "client.warn_to_log"
+    )
+    public static void warnToLog(@LuaNotNil String string) {
+        FiguraMod.LOGGER.warn("[FIGURA] -- " + string);
+    }
+
     @Override
     public String toString() {
         return "ClientAPI";
