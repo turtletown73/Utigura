@@ -3,7 +3,6 @@ package org.figuramc.figura.lua.api.world;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
@@ -18,6 +17,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
@@ -289,7 +289,15 @@ public class BlockStateAPI {
     @LuaMethodDoc("blockstate.get_entity_data")
     public LuaTable getEntityData() {
         BlockEntity entity = WorldAPI.getCurrentWorld().getBlockEntity(getBlockPos());
-        return (LuaTable) NbtToLua.convert(entity != null ? entity.saveWithoutMetadata(WorldAPI.getCurrentWorld().registryAccess()) : null);
+        if (entity != null ){
+            ItemStack stack = new ItemStack(entity.getBlockState().getBlock().asItem());
+            entity.saveToItem(stack, WorldAPI.getCurrentWorld().registryAccess());
+            LuaTable componentTable = (LuaTable) NbtToLua.convert(NbtToLua.convertToNbt(stack.getComponents()));
+            LuaTable entityTable = (LuaTable) NbtToLua.convert(entity.saveWithoutMetadata(WorldAPI.getCurrentWorld().registryAccess()));
+            LuaUtils.addLegacyNbtNames(componentTable, entityTable);
+            return entityTable;
+        }
+        return null;
     }
 
     @LuaWhitelist

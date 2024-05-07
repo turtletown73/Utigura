@@ -26,6 +26,7 @@ import net.minecraft.world.phys.HitResult;
 import java.util.*;
 
 import org.figuramc.figura.lua.NbtToLua;
+import org.figuramc.figura.lua.ReadOnlyLuaTable;
 import org.figuramc.figura.lua.api.json.FiguraJsonSerializer;
 import org.figuramc.figura.lua.api.world.BlockStateAPI;
 import org.figuramc.figura.lua.api.world.ItemStackAPI;
@@ -251,6 +252,7 @@ public class LuaUtils {
                         for (String key : itemTag.getAllKeys())
                             table.set(key, NbtToLua.convert(itemTag.get(key)));
 
+                        table = new ReadOnlyLuaTable(table);
                         return new ItemStackAPI(stack, table);
                     }
                 }
@@ -261,6 +263,123 @@ public class LuaUtils {
         }
 
         throw new LuaError("Illegal argument to " + methodName + "(): " + item);
+    }
+
+    public static void addLegacyNbtNames(LuaTable source, LuaTable dest) {
+        if (!source.get("minecraft:damage").equals(LuaValue.NIL) ){
+            dest.set("Damage", source.get("minecraft:damage"));
+        }
+        if (!source.get("minecraft:repair_cost").equals(LuaValue.NIL) ){
+            dest.set("RepairCost", source.get("minecraft:repair_cost"));
+        }
+        if (!source.get("minecraft:custom_model_data").equals(LuaValue.NIL)) {
+            dest.set("CustomModelData", source.get("minecraft:custom_model_data"));
+        }
+        if (!source.get("minecraft:block_state").equals(LuaValue.NIL)) {
+            dest.set("BlockStateTag", source.get("minecraft:block_state"));
+        }
+        if (!source.get("minecraft:entity_data").equals(LuaValue.NIL)) {
+            dest.set("EntityTag", source.get("minecraft:entity_data"));
+        }
+        if (!source.get("minecraft:block_entity_data").equals(LuaValue.NIL)) {
+            dest.set("BlockEntityTag", source.get("minecraft:block_entity_data"));
+        }
+        if (!source.get("minecraft:enchantments").equals(LuaValue.NIL)) {
+            dest.set("Enchantments", source.get("minecraft:enchantments"));
+        }
+        if (!source.get("minecraft:custom_name").equals(LuaValue.NIL)) {
+            LuaTable tab = new LuaTable();
+            if (!dest.get("display").equals(LuaValue.NIL))
+                tab = (LuaTable) dest.get("display");
+            tab.set("Name", source.get("minecraft:custom_name"));
+            dest.set("display", tab);
+        }
+        if (!source.get("minecraft:lore").equals(LuaValue.NIL)) {
+            LuaTable tab = new LuaTable();
+            if (!dest.get("display").equals(LuaValue.NIL))
+                tab = (LuaTable) dest.get("display");
+            tab.set("Lore", source.get("minecraft:lore"));
+            dest.set("display", tab);
+        }
+        if (!source.get("minecraft:dyed_color").equals(LuaValue.NIL)) {
+            if (!source.get("minecraft:dyed_color").get("rgb").equals(LuaValue.NIL)) {
+                LuaTable tab = new LuaTable();
+                if (!dest.get("display").equals(LuaValue.NIL))
+                    tab = (LuaTable) dest.get("display");
+                tab.set("color", source.get("minecraft:dyed_color").get("rgb"));
+                dest.set("display", tab);
+            }
+        }
+        if (!source.get("minecraft:map_color").equals(LuaValue.NIL)) {
+            LuaTable tab = new LuaTable();
+            if (!dest.get("display").equals(LuaValue.NIL))
+                tab = (LuaTable) dest.get("display");
+            tab.set("MapColor", source.get("minecraft:map_color"));
+            dest.set("display", tab);
+        }
+        if (!source.get("minecraft:stored_enchantments").equals(LuaValue.NIL)) {
+            dest.set("StoredEnchantments", source.get("minecraft:stored_enchantments"));
+        }
+        if (!source.get("minecraft:trim").equals(LuaValue.NIL)) {
+            dest.set("Trim", source.get("minecraft:trim"));
+        }
+        if (!source.get("minecraft:charged_projectiles").equals(LuaValue.NIL)) {
+            dest.set("ChargedProjectiles", source.get("minecraft:charged_projectiles"));
+        }
+        if (!source.get("minecraft:bundle_contents").equals(LuaValue.NIL)) {
+            dest.set("Items", source.get("minecraft:bundle_contents"));
+        }
+        if (!source.get("minecraft:map_id").equals(LuaValue.NIL)) {
+            dest.set("Map", source.get("minecraft:map_id"));
+        }
+        if (!source.get("minecraft:suspicious_stew_effects").equals(LuaValue.NIL)) {
+            dest.set("effects", source.get("minecraft:suspicious_stew_effects"));
+        }
+        if (!source.get("minecraft:debug_stick_state").equals(LuaValue.NIL)) {
+            dest.set("DebugProperty", source.get("minecraft:debug_stick_state"));
+        }
+        if (!source.get("minecraft:bucket_entity_data").equals(LuaValue.NIL)) {
+            for (LuaValue key : ((LuaTable)source.get("minecraft:bucket_entity_data")).keys()) {
+                dest.set(key, source.get("minecraft:bucket_entity_data").get(key));
+            }
+        }
+        if (!source.get("minecraft:instrument").equals(LuaValue.NIL)) {
+            dest.set("instrument", source.get("minecraft:instrument"));
+        }
+        if (!source.get("minecraft:recipes").equals(LuaValue.NIL)) {
+            dest.set("recipes", source.get("minecraft:recipes"));
+        }
+        if (!source.get("minecraft:profile").equals(LuaValue.NIL)) {
+            LuaTable tab = new LuaTable();
+            if(!source.get("minecraft:profile").get("id").equals(LuaValue.NIL)) {
+                tab.set("Id", source.get("minecraft:profile").get("id"));
+            }
+            if (!source.get("minecraft:profile").get("name").equals(LuaValue.NIL)) {
+                tab.set("Name", source.get("minecraft:profile").get("name"));
+            }
+            if (!source.get("minecraft:profile").get("properties").equals(LuaValue.NIL)) {
+                LuaTable properties = ((LuaTable)source.get("minecraft:profile").get("properties"));
+                LuaTable property = new LuaTable();
+                LuaTable textures = new LuaTable();
+                for (LuaValue key : properties.keys()) {
+                    LuaTable current = (LuaTable) properties.get(key);
+                    LuaTable texture = new LuaTable();
+                    if (!current.get("value").equals(LuaValue.NIL)) {
+                        texture.set("Value", current.get("value"));
+                    }
+                    if (!current.get("signature").equals(LuaValue.NIL)) {
+                        texture.set("Signature", current.get("signature"));
+                    }
+                    if (!current.get("name").equals(LuaValue.NIL)) {
+                        texture.set("Name", current.get("name"));
+                    }
+                    textures.set(key, texture);
+                }
+                property.set("textures", textures);
+                tab.set("Properties", property);
+            }
+            dest.set("SkullOwner", tab);
+        }
     }
 
     public static ItemStack parseItemStack(String methodName, Object item) {

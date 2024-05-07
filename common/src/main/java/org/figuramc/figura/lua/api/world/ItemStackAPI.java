@@ -1,16 +1,12 @@
 package org.figuramc.figura.lua.api.world;
 
-import com.mojang.serialization.DynamicOps;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
@@ -22,7 +18,6 @@ import org.figuramc.figura.lua.docs.LuaMethodDoc;
 import org.figuramc.figura.lua.docs.LuaTypeDoc;
 import org.figuramc.figura.utils.LuaUtils;
 import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
 
 import java.util.*;
 
@@ -63,7 +58,9 @@ public class ItemStackAPI {
     public ItemStackAPI(ItemStack itemStack) {
         this.itemStack = itemStack;
         this.id = BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
-        this.tag = new ReadOnlyLuaTable(itemStack.getComponents() != null ? NbtToLua.convert(NbtToLua.convertToNbt(itemStack.getComponents())) : new LuaTable());
+        LuaTable tag = itemStack.getComponents() != DataComponentMap.EMPTY ? (LuaTable) NbtToLua.convert(NbtToLua.convertToNbt(itemStack.getComponents())) : new LuaTable();
+        LuaUtils.addLegacyNbtNames(tag, tag);
+        this.tag = new ReadOnlyLuaTable(tag);
     }
 
     @LuaWhitelist
