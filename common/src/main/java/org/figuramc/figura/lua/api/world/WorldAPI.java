@@ -42,8 +42,12 @@ public class WorldAPI {
 
     public static final WorldAPI INSTANCE = new WorldAPI();
 
+    private static Level cached;
     public static Level getCurrentWorld() {
-        return Minecraft.getInstance().level;
+        Level level = Minecraft.getInstance().level;
+        if (cached != level && level != null)
+            return cached = level;
+        return cached;
     }
 
     @LuaWhitelist

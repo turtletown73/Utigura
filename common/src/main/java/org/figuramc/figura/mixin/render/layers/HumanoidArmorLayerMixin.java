@@ -278,7 +278,8 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
                 tintG = 1.0F;
                 tintB = 1.0F;
             }
-            ResourceLocation normalArmorResource = layer.texture(bl);
+            ResourceLocation normalArmorResource = RenderUtils.getArmorResource(entity, itemStack, armorItem, armorSlot, bl, layer);
+
             VertexConsumer regularArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(normalArmorResource));
             modelPart.render(poseStack, regularArmorConsumer, light, OverlayTexture.NO_OVERLAY, tintR, tintG, tintB, 1f);
         }

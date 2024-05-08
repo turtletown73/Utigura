@@ -1,6 +1,5 @@
 package org.figuramc.figura.avatar;
 
-import com.mojang.blaze3d.audio.OggAudioStream;
 import com.mojang.blaze3d.audio.SoundBuffer;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -18,6 +17,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.sounds.JOrbisAudioStream;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -1079,7 +1079,7 @@ public class Avatar {
     }
 
     public void loadSound(String name, byte[] data) throws Exception {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(data); OggAudioStream oggAudioStream = new OggAudioStream(inputStream)) {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(data); JOrbisAudioStream oggAudioStream = new JOrbisAudioStream(inputStream)) {
             SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
             this.customSounds.put(name, sound);
         }

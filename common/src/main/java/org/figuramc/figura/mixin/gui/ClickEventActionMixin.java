@@ -49,7 +49,7 @@ public class ClickEventActionMixin {
         variants.add(action);
         $VALUES = variants.toArray(new ClickEvent.Action[0]);
         UNSAFE_CODEC = StringRepresentable.fromEnum(ClickEvent.Action::values).fieldOf("action");
-        CODEC = ExtraCodecs.validate(UNSAFE_CODEC, ClickEvent.Action::filterForSerialization);
+        CODEC = UNSAFE_CODEC.validate(ClickEvent.Action::filterForSerialization);
         return action;
     }
 

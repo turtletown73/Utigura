@@ -1,5 +1,6 @@
 package org.figuramc.figura.mixin.gui;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
@@ -37,11 +38,23 @@ public class ChatComponentMixin {
     @Unique private Integer color;
     @Unique private int currColor;
 
-    @ModifyVariable(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", ordinal = 0, argsOnly = true)
-    private Component addMessage(Component message, Component msg, MessageSignature signature, int k, GuiMessageTag tag, boolean refresh) {
-        // do not change the message on refresh
-        if (refresh) return message;
+    @ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessageToQueue(Lnet/minecraft/client/GuiMessage;)V"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V")
+    private GuiMessage modifyQueue(GuiMessage value, Component  component, MessageSignature signature, GuiMessageTag tag) {
+        Component modified = modifyMessage(component);
+        if (component != value.content())
+            return new GuiMessage(value.addedTime(), modified, value.signature(), tag);
+        return value;
+    }
 
+    @ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessageToDisplayQueue(Lnet/minecraft/client/GuiMessage;)V"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V")
+    private GuiMessage modifyDisplayQueue(GuiMessage value, @Local(argsOnly = true) Component component, @Local(argsOnly = true) MessageSignature signature, @Local(argsOnly = true) GuiMessageTag tag) {
+        Component modified = modifyMessage(component);
+        if (component != value.content())
+            return new GuiMessage(value.addedTime(), modified, value.signature(), tag);
+        return value;
+    }
+
+    private Component modifyMessage(Component message) {
         color = null;
         if (AvatarManager.panic)
             return message;
@@ -143,14 +156,26 @@ public class ChatComponentMixin {
         return message;
     }
 
-    @Inject(at = @At("HEAD"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V", cancellable = true)
-    private void addMessage(Component message, MessageSignature signature, int ticks, GuiMessageTag tag, boolean refresh, CallbackInfo ci) {
-        if (message == null)
+    @Inject(at = @At("HEAD"), method = "addMessageToQueue", cancellable = true)
+    private void addMessageQueue(GuiMessage guiMessage, CallbackInfo ci) {
+        if (guiMessage == null || guiMessage.content() == null)
             ci.cancel();
     }
 
-    @ModifyArg(at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;ILnet/minecraft/client/GuiMessageTag;Z)V")
-    private Object addMessages(int index, Object message) {
+    @Inject(at = @At("HEAD"), method = "addMessageToDisplayQueue", cancellable = true)
+    private void addMessageDisplayQueue(GuiMessage guiMessage, CallbackInfo ci) {
+        if (guiMessage == null || guiMessage.content() == null)
+            ci.cancel();
+    }
+
+    @ModifyArg(at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V"), method = "addMessageToDisplayQueue")
+    private Object addMessagesDisplayQueue(int index, Object message) {
+        if (color != null) ((GuiMessageAccessor) message).figura$setColor(color);
+        return message;
+    }
+
+    @ModifyArg(at = @At(value = "INVOKE", target = "Ljava/util/List;add(ILjava/lang/Object;)V"), method = "addMessageToQueue")
+    private Object addMessagesQueue(int index, Object message) {
         if (color != null) ((GuiMessageAccessor) message).figura$setColor(color);
         return message;
     }
@@ -166,7 +191,7 @@ public class ChatComponentMixin {
         return color + currColor;
     }
 
-    @ModifyVariable(at = @At("STORE"), method = "refreshTrimmedMessage")
+    @ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessageToDisplayQueue(Lnet/minecraft/client/GuiMessage;)V"), method = "refreshTrimmedMessages")
     private GuiMessage refreshMessages(GuiMessage message) {
         color = ((GuiMessageAccessor) (Object) message).figura$getColor();
         return message;

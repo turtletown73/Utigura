@@ -1,4 +1,4 @@
-package org.figuramc.figura.mixin.gui;
+package org.figuramc.figura.mixin.fabric;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;

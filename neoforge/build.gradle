@@ -7,6 +7,10 @@ architectury {
     neoForge()
 }
 
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+}
+
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
@@ -38,7 +42,7 @@ dependencies {
 }
 
 processResources {
-   Map<String, Object> properties = new HashMap<>()
+    Map<String, Object> properties = new HashMap<>()
 
     properties.put("version", project.jarVersion)
     properties.put("java_version", rootProject.java_version)
@@ -46,7 +50,7 @@ processResources {
     properties.put("assets_version", rootProject.assets_version)
 
     properties.forEach((k, v) -> inputs.property(k, v.toString()))
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand properties
     }
 }
@@ -60,8 +64,7 @@ shadowJar {
 }
 
 remapJar {
-
-    atAccessWideners.add(project(":common").loom.accessWidenerPath.get().asFile.name)
+    atAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
     input.set shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier.set "neoforge-mc"

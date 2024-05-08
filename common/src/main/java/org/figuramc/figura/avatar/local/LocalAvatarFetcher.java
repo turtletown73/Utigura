@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 /**
@@ -29,7 +30,7 @@ public class LocalAvatarFetcher {
     public static final List<AvatarPath> ALL_AVATARS = new ArrayList<>();
     private static final Map<String, Properties> SAVED_DATA = new HashMap<>();
 
-    private static final Map<Path, WatchKey> WATCHED_KEYS = new HashMap<>();
+    private static final Map<Path, WatchKey> WATCHED_KEYS = new ConcurrentHashMap<>();
 
     private static boolean requireReload = true, loaded;
 

@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(SkullBlockEntity.class)
 public interface SkullBlockEntityAccessor {
     @Intrinsic
-    @Accessor("profileCache")
+    @Accessor("profileCacheByName")
     static LoadingCache<String, CompletableFuture<Optional<GameProfile>>> getProfileCache() {
         throw new AssertionError();
     }

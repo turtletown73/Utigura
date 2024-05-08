@@ -7,6 +7,5 @@ import net.minecraftforge.fml.common.Mod;
 public class FiguraModForge {
     // dummy empty mod class, we are client only
     public FiguraModForge() {
-        MinecraftForge.EVENT_BUS.addListener(FiguraModClientForge::cancelVanillaOverlays);
     }
 }

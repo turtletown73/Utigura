@@ -21,7 +21,7 @@ assets_version="${assets_version}"
 [[dependencies.figura]]
 modId = "forge"
 mandatory = true
-versionRange = "[47,)"
+versionRange = "[48,)"
 ordering = "NONE"
 side = "CLIENT"
 

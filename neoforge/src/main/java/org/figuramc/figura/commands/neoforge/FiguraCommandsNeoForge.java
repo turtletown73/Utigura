@@ -4,13 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.commands.FiguraCommands;
 import org.figuramc.figura.utils.FiguraClientCommandSource;
 
-@Mod.EventBusSubscriber(modid = FiguraMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = FiguraMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class FiguraCommandsNeoForge {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @SubscribeEvent

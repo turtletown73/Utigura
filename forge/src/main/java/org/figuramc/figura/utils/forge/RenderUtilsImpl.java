@@ -7,10 +7,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 
 public class RenderUtilsImpl {
-    public static <T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> ResourceLocation getArmorResource(HumanoidArmorLayer<T, M, A> armorLayer, Entity entity, ItemStack stack, ArmorItem item, EquipmentSlot slot, boolean isInner, String type) {
-        return armorLayer.getArmorResource(entity, stack, slot, type);
+    public static ResourceLocation getArmorResource(Entity entity, ItemStack stack, ArmorItem item, EquipmentSlot slot, boolean isInner, ArmorMaterial.Layer armormaterial$layer) {
+        return armormaterial$layer.texture(isInner);
     }
 }
