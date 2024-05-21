@@ -1068,7 +1068,7 @@
     "figura.docs.event.get_registered_count": "Returns the number of functions that are registered with the given name",
     "figura.docs.host": "A global API dedicated to specifically the host of the avatar\nFor other viewers, these do nothing",
     "figura.docs.host.write_to_log": "Write directly to the minecraft log, allowing for\nlogging debug data without filling chat",
-    "figura.docs.host.warn_to_log": "Write a warning directly to the minecraft log,\nallowing forlogging debug data without filling chat",
+    "figura.docs.host.warn_to_log": "Write a warning directly to the minecraft log,\nallowing for logging debug data without filling chat",
     "figura.docs.host.unlock_cursor": "Setting this value to true will unlock your cursor, letting you move it freely on the screen instead of it controlling your player's rotation",
     "figura.docs.host.is_host": "Returns true if this instance of the script is running on host",
     "figura.docs.host.is_cursor_unlocked": "Checks if the cursor is currently unlocked\nOnly responds to your own changes in your script, not anything done by Minecraft itself",
