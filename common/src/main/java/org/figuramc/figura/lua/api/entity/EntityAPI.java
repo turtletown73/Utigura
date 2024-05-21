@@ -315,6 +315,23 @@ public class EntityAPI<T extends Entity> {
     }
 
     @LuaWhitelist
+    @LuaMethodDoc("entity.is_moving")
+    public boolean isMoving() {
+        checkEntity();
+        return entity.getX() - entity.xOld != 0
+                || entity.getY() - entity.yOld != 0
+                || entity.getZ() - entity.zOld != 0;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc("entity.is_falling")
+    public boolean isFalling() {
+        checkEntity();
+        return !entity.onGround()
+                && entity.getY() - entity.yOld < 0;
+    }
+
+    @LuaWhitelist
     @LuaMethodDoc(
             overloads = @LuaMethodOverload(
                     argumentTypes = int.class,
