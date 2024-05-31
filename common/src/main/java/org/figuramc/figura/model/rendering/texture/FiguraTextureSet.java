@@ -79,7 +79,7 @@ public class FiguraTextureSet {
             }
             case RESOURCE -> {
                 try {
-                    yield new ResourceLocation(String.valueOf(pair.getValue()));
+                    yield ResourceLocation.parse(String.valueOf(pair.getValue()));
                 } catch (Exception ignored) {
                     yield MissingTextureAtlasSprite.getLocation();
                 }

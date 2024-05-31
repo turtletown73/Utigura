@@ -229,7 +229,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         if (avatar == null)
             return;
 
-        float delta = Minecraft.getInstance().getFrameTime();
+        float delta = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
         avatar.firstPersonRender(stack, multiBufferSource, player, (PlayerRenderer) (Object) this, arm, light, delta);
 
         if (avatar.luaRuntime != null)

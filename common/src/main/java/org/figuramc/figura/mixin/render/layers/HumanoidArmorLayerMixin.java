@@ -253,7 +253,6 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
     @Unique
     private void figura$renderArmorPart(ModelPart modelPart, PoseStack poseStack, MultiBufferSource vertexConsumers, int light, T entity, ItemStack itemStack, EquipmentSlot armorSlot, ArmorItem armorItem) {
         boolean bl = this.usesInnerModel(armorSlot);
-        boolean hasOverlay = false;
         boolean hasGlint = itemStack.hasFoil();
 
         modelPart.visible = true;
@@ -261,27 +260,14 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         modelPart.yRot = 0;
         modelPart.zRot = 0;
 
-        float tintR = 1;
-        float tintG = 1;
-        float tintB = 1;
         int i = itemStack.is(ItemTags.DYEABLE) ? DyedItemColor.getOrDefault(itemStack, -6265536) : -1;
-        hasOverlay = itemStack.is(ItemTags.DYEABLE);
 
         ArmorMaterial material = armorItem.getMaterial().value();
         for(ArmorMaterial.Layer layer : material.layers()) {
-            if (layer.dyeable() && i != -1) {
-                tintR = (float) (i >> 16 & 255) / 255.0F;
-                tintG = (float) (i >> 8 & 255) / 255.0F;
-                tintB = (float) (i & 255) / 255.0F;
-            } else {
-                tintR = 1.0F;
-                tintG = 1.0F;
-                tintB = 1.0F;
-            }
             ResourceLocation normalArmorResource = RenderUtils.getArmorResource(entity, itemStack, armorItem, armorSlot, bl, layer);
 
             VertexConsumer regularArmorConsumer = vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(normalArmorResource));
-            modelPart.render(poseStack, regularArmorConsumer, light, OverlayTexture.NO_OVERLAY, tintR, tintG, tintB, 1f);
+            modelPart.render(poseStack, regularArmorConsumer, light, OverlayTexture.NO_OVERLAY, i);
         }
 
         ArmorTrim trim = itemStack.get(DataComponents.TRIM);
@@ -289,11 +275,11 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
             var armorMaterial = armorItem.getMaterial();
             TextureAtlasSprite trimAtlas = this.armorTrimAtlas.getSprite(bl ? trim.innerTexture(armorMaterial) : trim.outerTexture(armorMaterial));
             VertexConsumer trimConsumer = trimAtlas.wrap(vertexConsumers.getBuffer(Sheets.armorTrimsSheet(false)));
-            modelPart.render(poseStack, trimConsumer, light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+            modelPart.render(poseStack, trimConsumer, light, OverlayTexture.NO_OVERLAY, -1);
         }
 
         if (hasGlint) {
-            modelPart.render(poseStack, vertexConsumers.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+            modelPart.render(poseStack, vertexConsumers.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY, -1);
         }
     }
 }

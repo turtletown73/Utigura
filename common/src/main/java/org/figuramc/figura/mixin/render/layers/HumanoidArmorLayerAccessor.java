@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface HumanoidArmorLayerAccessor<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> {
     @Intrinsic
     @Invoker("renderModel")
-    void renderModel(PoseStack matrices, MultiBufferSource vertexConsumers, int light, A model, float red, float green, float blue, @Nullable ResourceLocation overlay);
+    void renderModel(PoseStack matrices, MultiBufferSource vertexConsumers, int light, A model, int packedColor, @Nullable ResourceLocation overlay);
 
     @Intrinsic
     @Invoker("renderTrim")

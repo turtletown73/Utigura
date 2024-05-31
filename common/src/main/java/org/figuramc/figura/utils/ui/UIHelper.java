@@ -284,14 +284,14 @@ public final class UIHelper {
         prepareTexture(texture);
 
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         float u1 = width / textureWidth;
         float v1 = height / textureHeight;
         quad(bufferBuilder, gui.pose().last().pose(), x, y, width, height, -999f, 0f, u1, 0f, v1);
 
-        tessellator.end();
+        BufferUploader.drawWithShader(bufferBuilder.build());
+
     }
 
     public static void fillRounded(GuiGraphics gui, int x, int y, int width, int height, int color) {
@@ -316,8 +316,7 @@ public final class UIHelper {
 
         Matrix4f pose = gui.pose().last().pose();
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
         float rWidthThird = regionWidth / 3f;
         float rHeightThird = regionHeight / 3f;
@@ -343,7 +342,7 @@ public final class UIHelper {
         // bottom right
         quad(buffer, pose, x + width - rWidthThird, y + height - rHeightThird, rWidthThird, rHeightThird, u + rWidthThird * 2, v + rHeightThird * 2, rWidthThird, rHeightThird, textureWidth, textureHeight);
 
-        tessellator.end();
+        BufferUploader.drawWithShader(buffer.build());
     }
 
     public static void renderHalfTexture(GuiGraphics gui, int x, int y, int width, int height, int textureWidth, ResourceLocation texture) {
@@ -365,10 +364,9 @@ public final class UIHelper {
 
     public static void renderSprite(GuiGraphics gui, int x, int y, int z, int width, int height, TextureAtlasSprite sprite) {
         prepareTexture(sprite.atlasLocation());
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         quad(bufferBuilder, gui.pose().last().pose(), x, y, width, height, z, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        BufferUploader.drawWithShader(bufferBuilder.build());
     }
 
     private static void quad(BufferBuilder bufferBuilder, Matrix4f pose, float x, float y, float width, float height, float u, float v, float regionWidth, float regionHeight, int textureWidth, int textureHeight) {
@@ -382,10 +380,10 @@ public final class UIHelper {
     private static void quad(BufferBuilder bufferBuilder, Matrix4f pose, float x, float y, float width, float height, float z, float u0, float u1, float v0, float v1) {
         float x1 = x + width;
         float y1 = y + height;
-        bufferBuilder.vertex(pose, x, y1, z).uv(u0, v1).endVertex();
-        bufferBuilder.vertex(pose, x1, y1, z).uv(u1, v1).endVertex();
-        bufferBuilder.vertex(pose, x1, y, z).uv(u1, v0).endVertex();
-        bufferBuilder.vertex(pose, x, y, z).uv(u0, v0).endVertex();
+        bufferBuilder.addVertex(pose, x, y1, z).setUv(u0, v1);
+        bufferBuilder.addVertex(pose, x1, y1, z).setUv(u1, v1);
+        bufferBuilder.addVertex(pose, x1, y, z).setUv(u1, v0);
+        bufferBuilder.addVertex(pose, x, y, z).setUv(u0, v0);
     }
 
     public static void renderWithoutScissors(GuiGraphics gui, Consumer<GuiGraphics> toRun) {
@@ -466,7 +464,7 @@ public final class UIHelper {
     }
 
     public static void renderOutlineText(GuiGraphics gui, Font textRenderer, Component text, int x, int y, int color, int outline) {
-        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(new ByteBufferBuilder(1536));
         textRenderer.drawInBatch8xOutline(text.getVisualOrderText(), x, y, color, outline, gui.pose().last().pose(), bufferSource, LightTexture.FULL_BRIGHT);
         bufferSource.endBatch();
     }

@@ -1,5 +1,6 @@
 package org.figuramc.figura.lua.api.world;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
@@ -185,7 +186,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.get_use_duration")
     public int getUseDuration() {
-        return itemStack.getUseDuration();
+        return itemStack.getUseDuration(Minecraft.getInstance().player);
     }
 
     @LuaWhitelist
@@ -216,7 +217,7 @@ public class ItemStackAPI {
     @LuaWhitelist
     @LuaMethodDoc("itemstack.get_equipment_slot")
     public String getEquipmentSlot() {
-        return LivingEntity.getEquipmentSlotForItem(itemStack).name();
+        return Minecraft.getInstance().player.getEquipmentSlotForItem(itemStack).name();
     }
 
     @LuaWhitelist

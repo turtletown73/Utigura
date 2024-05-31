@@ -164,7 +164,7 @@ public class SoundAPI {
         if (owner.customSounds.get(id) != null)
             return true;
         try {
-            return Minecraft.getInstance().getSoundManager().getSoundEvent(new ResourceLocation(id)) != null;
+            return Minecraft.getInstance().getSoundManager().getSoundEvent(ResourceLocation.parse(id)) != null;
         } catch (Exception ignored) {
             return false;
         }
@@ -188,7 +188,7 @@ public class SoundAPI {
         }
 
         try {
-            WeighedSoundEvents events = Minecraft.getInstance().getSoundManager().getSoundEvent(new ResourceLocation(id));
+            WeighedSoundEvents events = Minecraft.getInstance().getSoundManager().getSoundEvent(ResourceLocation.parse(id));
             if (events != null) {
                 Sound sound = events.getSound(RandomSource.create(WorldAPI.getCurrentWorld().random.nextLong()));
                 if (sound != SoundManager.EMPTY_SOUND) {

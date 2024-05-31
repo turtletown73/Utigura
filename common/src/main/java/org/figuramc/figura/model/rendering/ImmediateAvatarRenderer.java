@@ -553,13 +553,12 @@ public class ImmediateAvatarRenderer extends AvatarRenderer {
                 uv.transform(customization.uvMatrix);
 
                 vertexConsumer
-                        .vertex(pos.x, pos.y, pos.z)
-                        .color((float) vertexData.color.x, (float) vertexData.color.y, (float) vertexData.color.z, customization.alpha)
-                        .uv((float) uv.x, (float) uv.y)
-                        .overlayCoords(overlay)
-                        .uv2(light)
-                        .normal((float) normal.x, (float) normal.y, (float) normal.z)
-                        .endVertex();
+                        .addVertex((float) pos.x, (float) pos.y, (float) pos.z)
+                        .setColor((float) vertexData.color.x, (float) vertexData.color.y, (float) vertexData.color.z, customization.alpha)
+                        .setUv((float) uv.x, (float) uv.y)
+                        .setOverlay(overlay)
+                        .setLight(light)
+                        .setNormal((float) normal.x, (float) normal.y, (float) normal.z);
             }
         });
     }

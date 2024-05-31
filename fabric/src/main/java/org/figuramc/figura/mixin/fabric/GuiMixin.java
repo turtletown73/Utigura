@@ -1,5 +1,6 @@
 package org.figuramc.figura.mixin.fabric;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,18 +26,18 @@ public class GuiMixin {
     @Unique private FiguraVec2 crosshairOffset;
 
     @Inject(at = @At("HEAD"), method = "render", cancellable = true)
-    private void onRender(GuiGraphics guiGraphics, float tickDelta, CallbackInfo ci) {
-        FiguraGui.onRender(guiGraphics, tickDelta, ci);
+    private void onRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        FiguraGui.onRender(guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(false), ci);
     }
 
     @Inject(at = @At("RETURN"), method = "render")
-    private void afterRender(GuiGraphics guiGraphics, float tickDelta, CallbackInfo ci) {
+    private void afterRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (!AvatarManager.panic)
             FiguraGui.renderOverlays(guiGraphics);
     }
 
     @Inject(at = @At("HEAD"), method = "renderCrosshair", cancellable = true)
-    private void renderCrosshair(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
+    private void renderCrosshair(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         crosshairOffset = null;
 
         if (ActionWheel.isEnabled()) {
@@ -59,7 +60,7 @@ public class GuiMixin {
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderCrosshair")
-    private void blitRenderCrosshair(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
+    private void blitRenderCrosshair(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (crosshairOffset != null) {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(crosshairOffset.x, crosshairOffset.y, 0d);
@@ -67,13 +68,13 @@ public class GuiMixin {
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", shift = At.Shift.AFTER), method = "renderCrosshair")
-    private void afterBlitRenderCrosshair(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
+    private void afterBlitRenderCrosshair(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (crosshairOffset != null)
             guiGraphics.pose().popPose();
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V"), method = "renderCrosshair")
-    private void blitRenderCrosshairSliced(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
+    private void blitRenderCrosshairSliced(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (crosshairOffset != null) {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(crosshairOffset.x, crosshairOffset.y, 0d);
@@ -81,7 +82,7 @@ public class GuiMixin {
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V", shift = At.Shift.AFTER), method = "renderCrosshair")
-    private void afterBlitRenderCrosshairSliced(GuiGraphics guiGraphics, float delta, CallbackInfo ci) {
+    private void afterBlitRenderCrosshairSliced(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (crosshairOffset != null)
             guiGraphics.pose().popPose();
     }

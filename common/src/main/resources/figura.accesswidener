@@ -14,3 +14,9 @@ extendable method net/minecraft/client/gui/Font renderText (Ljava/lang/String;FF
 accessible class net/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData
 accessible method net/minecraft/util/datafix/fixes/ItemStackComponentizationFix fixItemStack (Lnet/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData;Lcom/mojang/serialization/Dynamic;)V
 accessible field net/minecraft/util/datafix/fixes/ItemStackComponentizationFix$ItemStackData tag Lcom/mojang/serialization/Dynamic;
+
+accessible class net/minecraft/resources/ResourceLocation
+extendable class net/minecraft/resources/ResourceLocation
+accessible method net/minecraft/resources/ResourceLocation <init> (Ljava/lang/String;Ljava/lang/String;)V
+
+accessible class net/minecraft/client/gui/components/SubtitleOverlay$Subtitle

@@ -543,7 +543,7 @@ public class ClientAPI {
     @LuaWhitelist
     @LuaMethodDoc("client.get_frame_time")
     public static double getFrameTime() {
-        return Minecraft.getInstance().getFrameTime();
+        return Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
     }
 
     @LuaWhitelist
@@ -708,7 +708,12 @@ public class ClientAPI {
             value = "client.get_registry"
     )
     public static List<String> getRegistry(@LuaNotNil String registryName) {
-        Registry<?> registry = BuiltInRegistries.REGISTRY.get(new ResourceLocation(registryName));
+        Registry<?> registry;
+        try {
+            registry = BuiltInRegistries.REGISTRY.get(ResourceLocation.parse(registryName));
+        } catch (Error e) {
+            throw new LuaError("Registry " + registryName + " does not exist");
+        }
 
         if (registry != null) {
             return registry.asLookup().filterFeatures(WorldAPI.getCurrentWorld().enabledFeatures()).listElementIds().map(ResourceKey::location)

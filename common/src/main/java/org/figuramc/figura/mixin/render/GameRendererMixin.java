@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
@@ -21,6 +22,8 @@ import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.RenderUtils;
 import org.joml.Matrix4f;
+import org.joml.Quaternionfc;
+import org.joml.Vector3fc;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -49,16 +52,17 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
     @Shadow public abstract Minecraft getMinecraft();
 
+    @Shadow @Final private Camera mainCamera;
     @Unique
     private boolean avatarPostShader = false;
     @Unique
     private boolean hasShaders;
 
-    @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4f;rotationXYZ(FFF)Lorg/joml/Matrix4f;") )
-    private Matrix4f onCameraRotation(Matrix4f instance, float angleX, float angleY, float angleZ, Operation<Matrix4f> original, float tickDelta) {
+    @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4f;rotation(Lorg/joml/Quaternionfc;)Lorg/joml/Matrix4f;") )
+    private Matrix4f onCameraRotation(Matrix4f instance, Quaternionfc quat, Operation<Matrix4f> original) {
         Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
         if (!RenderUtils.vanillaModelAndScript(avatar))
-            return original.call(instance, angleX, angleY, angleZ);
+            return original.call(instance, quat);
 
         PoseStack stack = new PoseStack();
 
@@ -67,12 +71,12 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             stack.last().pose().set(instance);
 
             if (figura$bobHurtOP != null) {
-                figura$bobHurtOP.call(this, stack, tickDelta);
+                figura$bobHurtOP.call(this, stack, this.mainCamera.getPartialTickTime());
                 figura$bobHurtOP = null;
             }
             if (this.minecraft.options.bobView().get()) {
                 if (figura$bobViewOP != null) {
-                    figura$bobViewOP.call(this, stack, tickDelta);
+                    figura$bobViewOP.call(this, stack, this.mainCamera.getPartialTickTime());
                     figura$bobViewOP = null;
                 }
             }
@@ -99,11 +103,11 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
        // FiguraMat3 normal = avatar.luaRuntime.renderer.cameraNormal;
       //  if (normal != null)
       //      stack.last().normal().set(normal.toMatrix3f());
-        return original.call(instance, angleX, angleY, angleZ);
+        return original.call(instance, quat);
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))
-    private void render(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
+    private void render(DeltaTracker deltaTracker, boolean bl, CallbackInfo ci) {
         Entity entity = this.minecraft.getCameraEntity();
         Avatar avatar = AvatarManager.getAvatar(entity);
         if (!RenderUtils.vanillaModelAndScript(avatar)) {
@@ -163,7 +167,7 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
 
     // bobbing fix courtesy of Iris; https://github.com/IrisShaders/Iris/blob/1.20.1/src/main/java/net/coderbot/iris/mixin/MixinModelViewBobbing.java
     @Inject(method = "renderLevel", at = @At("HEAD"))
-    private void onRenderLevel(float tickDelta, long limitTime, CallbackInfo ci) {
+    private void onRenderLevel(DeltaTracker deltaTracker, CallbackInfo ci) {
         hasShaders = ClientAPI.hasShaderPack();
     }
 

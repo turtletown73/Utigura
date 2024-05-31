@@ -3,6 +3,7 @@ package org.figuramc.figura.utils;
 import com.google.gson.*;
 import com.mojang.brigadier.StringReader;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.SlotArgument;
@@ -404,11 +405,10 @@ public class LuaUtils {
     }
 
     public static ResourceLocation parsePath(String path) {
-        try {
-            return new ResourceLocation(path);
-        } catch (Exception e) {
-            throw new LuaError(e.getMessage());
-        }
+        DataResult<ResourceLocation> res = ResourceLocation.read(path);
+        return res.getOrThrow(s -> {
+            throw new LuaError(s);
+        });
     }
 
     public static Object[] parseBlockHitResult(HitResult hitResult) {
