@@ -18,7 +18,7 @@ public class SubtitleOverlayMixin implements SubtitleOverlayAccessor {
     @Shadow @Final private List<SubtitleOverlay.Subtitle> subtitles;
 
     @Override
-    public void figura$PlaySound(LuaSound sound) {
+    public void figura$PlaySound(LuaSound sound, float volume) {
         Component text = sound.getSubtitleText();
         if (text == null)
             return;
@@ -31,6 +31,6 @@ public class SubtitleOverlayMixin implements SubtitleOverlayAccessor {
                 return;
             }
         }
-        this.subtitles.add(new SubtitleOverlay.Subtitle(text, sound.getAttenuation(), pos));
+        this.subtitles.add(new SubtitleOverlay.Subtitle(text, volume, pos));
     }
 }
