@@ -42,19 +42,19 @@ public class ChatComponentMixin {
     @Unique private Integer color;
     @Unique private int currColor;
 
-    @ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessageToQueue(Lnet/minecraft/client/GuiMessage;)V"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V")
-    private GuiMessage modifyQueue(GuiMessage value, Component  component, MessageSignature signature, GuiMessageTag tag) {
-        Component modified = modifyMessage(component);
-        if (component != value.content())
-            return new GuiMessage(value.addedTime(), modified, value.signature(), tag);
+    @ModifyVariable(at = @At(value = "HEAD"), method = "addMessageToQueue", argsOnly = true)
+    private GuiMessage modifyQueue(GuiMessage value) {
+        Component modified = modifyMessage(value.content());
+        if (value.content() != modified)
+            return new GuiMessage(value.addedTime(), modified, value.signature(), value.tag());
         return value;
     }
 
-    @ModifyVariable(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessageToDisplayQueue(Lnet/minecraft/client/GuiMessage;)V"), method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V")
-    private GuiMessage modifyDisplayQueue(GuiMessage value, @Local(argsOnly = true) Component component, @Local(argsOnly = true) MessageSignature signature, @Local(argsOnly = true) GuiMessageTag tag) {
-        Component modified = modifyMessage(component);
-        if (component != value.content())
-            return new GuiMessage(value.addedTime(), modified, value.signature(), tag);
+    @ModifyVariable(at = @At(value = "HEAD"), method = "addMessageToDisplayQueue", argsOnly = true)
+    private GuiMessage modifyDisplayQueue(GuiMessage value) {
+        Component modified = modifyMessage(value.content());
+        if (value.content() != modified)
+            return new GuiMessage(value.addedTime(), modified, value.signature(), value.tag());
         return value;
     }
 
