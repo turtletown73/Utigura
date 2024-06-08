@@ -21,10 +21,10 @@ import org.figuramc.figura.utils.ColorUtils;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.RenderUtils;
 import org.joml.Matrix4f;
+import org.joml.Quaternionfc;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin implements GameRendererAccessor {
@@ -60,21 +60,14 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
         if (!RenderUtils.vanillaModelAndScript(avatar))
             return original.call(instance, angleX, angleY, angleZ);
 
-        PoseStack stack = new PoseStack();
-
         // part of the bobbing fix
         if (!hasShaders) {
+            PoseStack stack = new PoseStack();
             stack.last().pose().set(instance);
 
-            if (figura$bobHurtOP != null) {
-                figura$bobHurtOP.call(this, stack, tickDelta);
-                figura$bobHurtOP = null;
-            }
+            this.bobHurt(stack, tickDelta);
             if (this.minecraft.options.bobView().get()) {
-                if (figura$bobViewOP != null) {
-                    figura$bobViewOP.call(this, stack, tickDelta);
-                    figura$bobViewOP = null;
-                }
+                this.bobView(stack, tickDelta);
             }
 
             instance.set(stack.last().pose());
@@ -170,11 +163,15 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
     @ModifyArg(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"), index = 0)
     private PoseStack renderLevelBobHurt(PoseStack stack) {
         if (hasShaders) return stack;
-
         stack.pushPose();
         stack.last().pose().identity();
-
         return stack;
+    }
+
+
+    @Override @Intrinsic
+    public double figura$getFov(Camera camera, float tickDelta, boolean changingFov) {
+        return this.getFov(camera, tickDelta, changingFov);
     }
 
     // Don't bob until later
@@ -182,19 +179,17 @@ public abstract class GameRendererMixin implements GameRendererAccessor {
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/GameRenderer;bobView(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"))
     private void figura$stopBobView(GameRenderer instance, PoseStack stack, float f, Operation<GameRenderer> original) {
-        figura$bobViewOP = original;
+        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
+        if (!RenderUtils.vanillaModelAndScript(avatar) || !hasShaders)
+            original.call(instance, stack, f);
     }
 
     @WrapOperation(method = "renderLevel",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/GameRenderer;bobHurt(Lcom/mojang/blaze3d/vertex/PoseStack;F)V"))
     private void figura$stopBobHurt(GameRenderer instance, PoseStack stack, float f, Operation<GameRenderer> original) {
-        figura$bobHurtOP = original;
-    }
-
-
-    @Override @Intrinsic
-    public double figura$getFov(Camera camera, float tickDelta, boolean changingFov) {
-        return this.getFov(camera, tickDelta, changingFov);
+        Avatar avatar = AvatarManager.getAvatar(this.minecraft.getCameraEntity() == null ? this.minecraft.player : this.minecraft.getCameraEntity());
+        if (!RenderUtils.vanillaModelAndScript(avatar) || !hasShaders)
+            original.call(instance, stack, f);
     }
 }
