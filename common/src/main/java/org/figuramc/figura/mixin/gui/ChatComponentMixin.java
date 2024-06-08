@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.GuiMessageTag;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -19,7 +20,9 @@ import org.figuramc.figura.lua.api.nameplate.NameplateCustomization;
 import org.figuramc.figura.permissions.Permissions;
 import org.figuramc.figura.utils.EntityUtils;
 import org.figuramc.figura.utils.TextUtils;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,6 +38,7 @@ import java.util.regex.Pattern;
 @Mixin(ChatComponent.class)
 public class ChatComponentMixin {
 
+    @Shadow @Final private Minecraft minecraft;
     @Unique private Integer color;
     @Unique private int currColor;
 
@@ -63,7 +67,7 @@ public class ChatComponentMixin {
         Avatar localPlayer = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         if (localPlayer != null) {
             TextUtils.allowScriptEvents = true;
-            String json = Component.Serializer.toJson(message, RegistryAccess.EMPTY);
+            String json = Component.Serializer.toJson(message, this.minecraft.player.registryAccess());
             TextUtils.allowScriptEvents = false;
 
             Pair<String, Integer> event = localPlayer.chatReceivedMessageEvent(message.getString(), json);
