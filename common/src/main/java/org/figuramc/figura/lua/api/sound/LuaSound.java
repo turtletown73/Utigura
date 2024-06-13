@@ -72,7 +72,7 @@ public class LuaSound {
         return id;
     }
 
-    private float calculateVolume() {
+    public float calculateVolume() {
         return SoundAPI.getSoundEngine().figura$getVolume(SoundSource.PLAYERS) * (owner.permissions.get(Permissions.VOLUME) / 100f);
     }
 
