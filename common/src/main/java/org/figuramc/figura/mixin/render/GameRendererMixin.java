@@ -24,6 +24,7 @@ import org.figuramc.figura.utils.RenderUtils;
 import org.joml.Matrix4f;
 import org.joml.Quaternionfc;
 import org.joml.Vector3fc;
+import org.luaj.vm2.LuaError;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;

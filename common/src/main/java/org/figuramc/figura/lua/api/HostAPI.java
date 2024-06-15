@@ -256,8 +256,10 @@ public class HostAPI {
         Map<String, Object> map = new HashMap<>();
 
         map.put("addedTime", message.addedTime());
+        TextUtils.allowScriptEvents = true;
         map.put("message", message.content().getString());
         map.put("json", message.content());
+        TextUtils.allowScriptEvents = false;
         map.put("backgroundColor", ((GuiMessageAccessor) (Object) message).figura$getColor());
 
         return map;
