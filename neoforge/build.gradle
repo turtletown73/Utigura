@@ -21,7 +21,7 @@ configurations {
 
 dependencies {
     mappings loom.layered {
-        mappings("org.quiltmc:quilt-mappings:$minecraft_version-rc1+build.$mappings:intermediary-v2")
+        mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$mappings:intermediary-v2")
         officialMojangMappings()
     }
 
@@ -38,7 +38,7 @@ dependencies {
     }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
 }
 
 processResources {
