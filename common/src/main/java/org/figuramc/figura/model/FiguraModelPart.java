@@ -181,9 +181,8 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
         double s = 1 / 16d;
         if (UIHelper.paperdoll) {
             s *= -UIHelper.dollScale;
-        } else {
-            prevPartToView.rightMultiply(FiguraMat4.of().rotateY(180));
         }
+
         FiguraVec3 scale = currentTransforms.stackScale.scaled(s);
         FiguraVec3 piv = customization.getPivot();
         FiguraVec3 piv2 = customization.getOffsetPivot().add(piv);

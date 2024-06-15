@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityAttachment;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.*;
 import org.figuramc.figura.FiguraMod;
 import org.figuramc.figura.avatar.Avatar;
@@ -82,9 +84,13 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
 
         // pivot
         FiguraMod.pushProfiler("pivot");
+        Vec3 yOffset = player.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, player.getViewYRot(delta));
+
         FiguraVec3 pivot;
         if (hasCustom && custom.getPivot() != null)
             pivot = custom.getPivot();
+        else if (yOffset != null)
+            pivot = FiguraVec3.of(yOffset.x, yOffset.y + 0.5f, yOffset.z);
         else
             pivot = FiguraVec3.of(0f, player.getBbHeight() + 0.5f, 0f);
 
@@ -103,7 +109,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
         // scale
         FiguraMod.popPushProfiler("scale");
         float scale = 0.025f;
-        FiguraVec3 scaleVec = FiguraVec3.of(-scale, -scale, scale);
+        FiguraVec3 scaleVec = FiguraVec3.of(scale, -scale, scale);
         if (hasCustom && custom.getScale() != null)
             scaleVec.multiply(custom.getScale());
 
