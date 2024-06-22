@@ -51,8 +51,8 @@ public abstract class BakedGlyphMixin implements BakedGlyphAccessor {
     public void render(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light, CallbackInfo ci) {
         if (figura$metadata == null) return;
 
-        float h = this.up - 3.0f;
-        float j = this.down - 3.0f;
+        float h = this.up;
+        float j = this.down;
         float k = y + h;
         float l = y + j;
         float m = italic ? 1.0f - 0.25f * h : 0f;
