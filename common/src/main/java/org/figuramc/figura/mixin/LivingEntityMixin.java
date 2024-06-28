@@ -32,7 +32,6 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(at = @At("TAIL"), method = "handleDamageEvent")
     private void handleDamageEvent(DamageSource source, CallbackInfo ci) {
-        //Avatar avatar = AvatarManager.getAvatarForPlayer(FiguraMod.getLocalPlayerUUID());
         Avatar avatar = AvatarManager.getAvatar(this);
         if (avatar == null) return;
         avatar.damageEvent(
