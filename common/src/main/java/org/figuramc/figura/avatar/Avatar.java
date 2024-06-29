@@ -477,6 +477,10 @@ public class Avatar {
         if (loaded) run("CHAR_TYPED", tick, chars, modifiers, codePoint);
     }
 
+    public boolean totemEvent() {
+        return isCancelled(loaded ? run("TOTEM",tick) : null);
+    }
+
     // -- rendering events -- // 
 
     private void render() {
