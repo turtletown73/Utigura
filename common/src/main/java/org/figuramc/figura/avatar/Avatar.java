@@ -430,6 +430,10 @@ public class Avatar {
         if (loaded) run("RESOURCE_RELOAD", tick);
     }
 
+    public void damageEvent(String sourceType, EntityAPI<?> sourceCause, EntityAPI<?> sourceDirect, FiguraVec3 sourcePosition) {
+        if (loaded) run("DAMAGE", tick, sourceType, sourceCause, sourceDirect, sourcePosition);
+    }
+
     // -- host only events -- // 
 
     public String chatSendMessageEvent(String message) { // piped event
