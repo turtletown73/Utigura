@@ -89,7 +89,7 @@ public class MathUtils {
         Minecraft minecraft = Minecraft.getInstance();
         Camera camera = minecraft.gameRenderer.getMainCamera();
         Matrix3f transformMatrix = new Matrix3f().rotation(camera.rotation());
-        transformMatrix.scale(1, 1, -1);
+        transformMatrix.scale(-1, 1,-1);
         transformMatrix.invert();
 
         Vec3 camPos = camera.getPosition();
