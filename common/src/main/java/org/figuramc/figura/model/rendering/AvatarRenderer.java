@@ -189,6 +189,7 @@ public abstract class AvatarRenderer {
     /**
      * Gets a matrix to transform from world space to view space, based on the
      * player's camera position and orientation.
+     * This is legacy and should not be used to go from world to view as of 1.20.5 it does not depend on the rotation anymore
      * @return That matrix.
      */
     public static FiguraMat4 worldToViewMatrix() {

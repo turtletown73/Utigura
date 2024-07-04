@@ -176,6 +176,7 @@ public class FiguraModelPart implements Comparable<FiguraModelPart> {
             return;
 
         // Because view/rot isn't implicitly in the matrix anymore we have to multiply by it
+        // multiplied by the inverse of the position matrix as we don't want to move parts twice
         FiguraMat4 prevPartToView = AvatarRenderer.worldToViewMatrix().multiply(currentTransforms.positionMatrix.inverted());
 
         double s = 1 / 16d;

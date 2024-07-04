@@ -271,7 +271,16 @@ public class ClientAPI {
         Vector3f vec = new Vector3f();
         quaternion.getEulerAnglesYXZ(vec);
         double f = 180d / Math.PI;
-        return FiguraVec3.fromVec3f(vec).multiply(f, -f, f); // degrees, and negate y
+        // Before when the player faced 0, the value was actually 180, we must revert to this or avatars break
+        // Thanks Mojang...
+        vec.y = (float) (Math.PI - vec.y);
+
+        if (vec.y > Math.PI) {
+            vec.y -= (float) (Math.PI*2);
+        } else if (vec.y < -Math.PI) {
+            vec.y += (float) (Math.PI*2);
+        } // I hate that this works, rotating Y by 2*PI didn't, i tried, if someone has a better solution, feel free to open a PR
+        return FiguraVec3.fromVec3f(vec).multiply(-f, f, f);
     }
 
     @LuaWhitelist
