@@ -949,8 +949,10 @@ public class Avatar {
 
     public void clearSounds() {
         SoundAPI.getSoundEngine().figura$stopSound(owner, null);
-        for (SoundBuffer value : customSounds.values())
-            value.releaseAlBuffer();
+        if (SoundAPI.getSoundEngine().figura$isEngineActive()) {
+            for (SoundBuffer value : customSounds.values())
+                value.releaseAlBuffer();
+        }
     }
 
     public void closeBuffers() {
@@ -1087,9 +1089,13 @@ public class Avatar {
     }
 
     public void loadSound(String name, byte[] data) throws Exception {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(data); OggAudioStream oggAudioStream = new OggAudioStream(inputStream)) {
-            SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
-            this.customSounds.put(name, sound);
+        if (SoundAPI.getSoundEngine().figura$isEngineActive()) {
+            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(data); OggAudioStream oggAudioStream = new OggAudioStream(inputStream)) {
+                SoundBuffer sound = new SoundBuffer(oggAudioStream.readAll(), oggAudioStream.getFormat());
+                this.customSounds.put(name, sound);
+            }
+        } else {
+            FiguraMod.LOGGER.error("Sound is not supported or enabled on this system but a custom sound tried to load anyway, scripts may break.");
         }
     }
 
