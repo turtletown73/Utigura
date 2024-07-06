@@ -205,7 +205,7 @@ public class WorldAPI {
                 decorationMap.put("x", decoration.x());
                 decorationMap.put("y", decoration.y());
                 decorationMap.put("rot", decoration.rot());
-                decorationMap.put("image", decoration.type().getIcon());
+                decorationMap.put("image", decoration.getSpriteLocation());
                 decorations.add(decorationMap);
         }
         map.put("decorations", decorations);
