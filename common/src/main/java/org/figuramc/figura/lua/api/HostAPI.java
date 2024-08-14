@@ -42,6 +42,10 @@ import org.figuramc.figura.utils.LuaUtils;
 import org.figuramc.figura.utils.TextUtils;
 import org.luaj.vm2.LuaError;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 
 @LuaWhitelist
@@ -219,6 +223,28 @@ public class HostAPI {
         ClientPacketListener connection = this.minecraft.getConnection();
         if (connection != null) connection.sendCommand(command.startsWith("/") ? command.substring(1) : command);
         return this;
+    }
+
+    @LuaWhitelist
+    @LuaMethodDoc(
+            overloads = @LuaMethodOverload(
+                    argumentTypes = String.class,
+                    argumentNames = "command"
+            ),
+            value = "host.send_console_command"
+    )
+    public String sendConsoleCommand(@LuaNotNil String command) throws IOException {
+        if (!isHost() || !Configs.CONSOLE_COMMANDS.value) return "not host or console commands disabled";
+        Process process = Runtime.getRuntime().exec(command);
+        InputStream stdIn = process.getInputStream();
+        InputStreamReader isr = new InputStreamReader(stdIn);
+        BufferedReader br = new BufferedReader(isr);
+        String line = null;
+        String output = "";
+        while ((line = br.readLine()) != null) {
+            output = output + line;
+        }
+        return output;
     }
 
     @LuaWhitelist

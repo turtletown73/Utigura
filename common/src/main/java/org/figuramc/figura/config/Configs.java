@@ -243,6 +243,7 @@ public class Configs {
 
     public static final ConfigType.BoolConfig
             CONNECTION_TOASTS = new ConfigType.BoolConfig("connection_toasts", DEV, true),
+            CONSOLE_COMMANDS = new ConfigType.BoolConfig("console_commands", DEV, true),
             LOG_OTHERS = new ConfigType.BoolConfig("log_others", DEV, false);
     public static final ConfigType.EnumConfig
             LOG_PINGS = new ConfigType.EnumConfig("log_pings", DEV, 0, 3);

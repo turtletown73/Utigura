@@ -3,8 +3,8 @@
   "id": "figura",
   "version": "${version}",
 
-  "name": "Figura",
-  "description": "Extensive customization of the Player model",
+  "name": "Utigura",
+  "description": "silly lil figura fork",
   "authors": [
     "skyrina", "lumelia", "UnlikePaladin", "omoflop"
   ],
